@@ -141,10 +141,11 @@ class HBNBCommand(cmd.Cmd):
                 # Else skip
                 if value.isdigit():
                     value = int(value)
-                elif value.count(".") == 1
-                and value.partition(".")[0].isdigit()
-                and value.partition(".")[2].isdigit():
-                    value = float(value)
+                elif value.count(".") == 1:
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        continue
                 elif not value[0] == value[-1] == '"':
                     continue
                 else:
