@@ -143,16 +143,17 @@ class HBNBCommand(cmd.Cmd):
                     value = value.replace("_", " ")
                     value = value[1:-1]
 
-                elif value.isdigit():
-                    value = int(value)
-
                 elif value.count(".") == 1:
                     try:
                         value = float(value)
                     except ValueError:
                         continue
+
                 else:
-                    continue
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        continue
 
                 dictionary[key] = value
 
