@@ -139,19 +139,20 @@ class HBNBCommand(cmd.Cmd):
 
                 # Parse value: can be either a str, an int or float.
                 # Else skip
-                if value.isdigit():
+                if value[0] == value[-1] == '"':
+                    value = value.replace("_", " ")
+                    value = value[1:-1]
+
+                elif value.isdigit():
                     value = int(value)
+
                 elif value.count(".") == 1:
                     try:
                         value = float(value)
                     except ValueError:
                         continue
-                elif not value[0] == value[-1] == '"':
-                    print("Am I here?")
-                    continue
                 else:
-                    value = value.replace("_", " ")
-                    value = value[1:-1]
+                    continue
 
                 dictionary[key] = value
 
