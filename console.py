@@ -115,35 +115,35 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        #Separate all params
+        # Separate all params
         arg_list = args.split(" ")
 
         if not args:
             print("** class name missing **")
             return
 
-        #Check if first argument is a valid class name
+        # Check if first argument is a valid class name
         elif arg_list[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
 
-        #Create a dictionary with all the params
+        # Create a dictionary with all the params
         dictionary = {}
         for param in arg_list[1:]:
-            #Param structure: <key>=<value>
+            # Param structure: <key>=<value>
             keyValue = param.partition("=")
-            #Check if param structure is correct, else skip.
+            # Check if param structure is correct, else skip.
             if len(keyValue[1]) == 1:
                 key = keyValue[0]
                 value = keyValue[2]
 
-                #Parse value: can be either a str, an int or float.
-                #Else skip
+                # Parse value: can be either a str, an int or float.
+                # Else skip
                 if value.isdigit():
                     value = int(value)
-                elif value.count(".") == 1 and \
-                value.partition(".")[0].isdigit() and \
-                value.partition(".")[2].isdigit():
+                elif value.count(".") == 1
+                and value.partition(".")[0].isdigit()
+                and value.partition(".")[2].isdigit():
                     value = float(value)
                 elif not value[0] == value[-1] == '"':
                     continue
@@ -153,7 +153,7 @@ class HBNBCommand(cmd.Cmd):
 
                 dictionary[key] = value
 
-        #Create new instance and add the parsed params to it
+        # Create new instance and add the parsed params to it
         new_instance = HBNBCommand.classes[arg_list[0]]()
         new_instance.__dict__.update(dictionary)
         storage.save()
@@ -221,7 +221,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del(storage.all()[key])
+            del (storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -353,6 +353,7 @@ class HBNBCommand(cmd.Cmd):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
