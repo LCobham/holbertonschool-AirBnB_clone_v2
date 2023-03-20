@@ -147,9 +147,10 @@ class HBNBCommand(cmd.Cmd):
                     except ValueError:
                         continue
                 elif not value[0] == value[-1] == '"':
+                    print("Am I here?")
                     continue
                 else:
-                    value.replace("_", " ")
+                    value = value.replace("_", " ")
                     value = value[1:-1]
 
                 dictionary[key] = value
