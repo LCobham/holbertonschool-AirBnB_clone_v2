@@ -160,7 +160,7 @@ class HBNBCommand(cmd.Cmd):
         # Create new instance and add the parsed params to it
         new_instance = HBNBCommand.classes[arg_list[0]]()
         new_instance.__dict__.update(dictionary)
-        storage.save()
+        storage.new(new_instance)
         print(new_instance.id)
         storage.save()
 
@@ -237,6 +237,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, args):
         """ Shows all objects, or all objects of a class"""
+        from models import storage
         print_list = []
 
         if args:
@@ -244,12 +245,12 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+            print_list = list(map(lambda x: str(x),
+                              storage.all(args).values()))
+
         else:
-            for k, v in storage._FileStorage__objects.items():
-                print_list.append(str(v))
+            print_list = list(map(lambda x: str(x),
+                              storage.all().values()))
 
         print(print_list)
 
@@ -261,7 +262,8 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, args):
         """Count current number of class instances"""
         count = 0
-        for k, v in storage._FileStorage__objects.items():
+        objs = storage.all()
+        for k, v in objs.items():
             if args == k.split('.')[0]:
                 count += 1
         print(count)

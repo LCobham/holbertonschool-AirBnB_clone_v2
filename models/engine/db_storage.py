@@ -15,19 +15,20 @@ class DBStorage:
     __session = None
 
     def __init__(self):
-        self.__engine = create_engine("{}+{}://{}:{}@{}/{}".\
+        self.__engine = create_engine("{}+{}://{}:{}@{}/{}".
                                       format("mysql", "mysqldb",
-                                             os.getenvb("HBNB_MYSQL_USER"),
-                                             os.getenvb("HBNB_MYSQL_PWD"),
-                                             os.getenvb("HBNB_MYSQL_HOST"),
-                                             os.getenvb("HBNB_MYSQL_DB")),
+                                             os.environ.get("HBNB_MYSQL_USER"),
+                                             os.environ.get("HBNB_MYSQL_PWD"),
+                                             os.environ.get("HBNB_MYSQL_HOST"),
+                                             os.environ.get("HBNB_MYSQL_DB")),
                                       pool_pre_ping=True)
-        if os.getenvb("HBNB_ENV") == "test":
+        if os.environ.get("HBNB_ENV") == "test":
             # drop all tables
             pass
 
     def all(self, cls=None):
-        """ Return all objs in the database if type(obj) == cls.
+        """
+            Return all objs in the database if type(obj) == cls.
             If cls is set to None, return all objects in the db
         """
         from models.user import User
@@ -37,6 +38,10 @@ class DBStorage:
         from models.amenity import Amenity
         from models.review import Review
 
+        classes = {'User': User, 'Place': Place,
+                   'State': State, 'City': City, 'Amenity': Amenity,
+                   'Review': Review}
+
         dictionary = {}
 
         if cls is None:
@@ -44,7 +49,7 @@ class DBStorage:
             for _cls in class_list:
                 qry = self.__session.query(_cls)
         else:
-            qry = self.__session.query(cls)
+            qry = self.__session.query(classes.get(cls))
 
         for obj in qry:
             dictionary[f"{type(obj).__name__}.{obj.id}"] = obj
@@ -70,6 +75,7 @@ class DBStorage:
 
         Base.metadata.create_all(self.__engine)
 
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(bind=self.__engine,
+                                       expire_on_commit=False)
         Session = scoped_session(session_factory)
         self.__session = Session()
