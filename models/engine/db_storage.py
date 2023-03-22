@@ -72,6 +72,7 @@ class DBStorage:
         """ Recreate all objects from the database """
         from models.state import State
         from models.city import City
+        from models.user import User
 
         Base.metadata.create_all(self.__engine)
 
