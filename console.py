@@ -140,7 +140,7 @@ class HBNBCommand(cmd.Cmd):
                 # Parse value: can be either a str, an int or float.
                 # Else skip
                 if value[0] == value[-1] == '"':
-                    value = value.replace("_", " ").replace('"', '\\"')
+                    value = value.replace("_", " ")
                     value = value[1:-1]
 
                 elif value.count(".") == 1:
