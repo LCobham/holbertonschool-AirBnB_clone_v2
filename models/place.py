@@ -1,9 +1,17 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, Float, ForeignKey
+from sqlalchemy import Table, Column, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 import os
+
+place_amenities = Table('place_amenity', Base.metadata,
+                        Column('place_id', String(60),
+                               ForeignKey("places.id"),
+                               nullable=False),
+                        Column('amenity_id', String(60),
+                               ForeignKey("amenities.id"),
+                               nullable=False))
 
 
 class Place(BaseModel, Base):
@@ -22,6 +30,9 @@ class Place(BaseModel, Base):
     amenity_ids = []
 
     reviews = relationship("Review", backref="place", cascade="delete")
+    amenities = relationship("Amenity", secondary=place_amenities,
+                             viewonly=False,
+                             back_populates="place_amenities")
 
     @property
     def reviews(self):
@@ -38,3 +49,18 @@ class Place(BaseModel, Base):
                 if type(obj) is Review and obj.place_id == self.id:
                     res.append(obj)
             return res
+
+    """ @property
+    def amenities(self):
+        storageType = os.environ.get("HBNB_TYPE_STORAGE")
+
+        if storageType == "db":
+            return self.amenities
+
+        elif storageType == "file":
+            res = []
+            objs = storage.all()
+            for id, obj in objs.items():
+                if type(obj) is Amenity and obj.place_id == self.id:
+                    res.append(obj)
+            return res """

@@ -140,7 +140,7 @@ class HBNBCommand(cmd.Cmd):
                 # Parse value: can be either a str, an int or float.
                 # Else skip
                 if value[0] == value[-1] == '"':
-                    value = value.replace("_", " ")
+                    value = value.replace("_", " ").replace('"', '\\"')
                     value = value[1:-1]
 
                 elif value.count(".") == 1:
@@ -158,8 +158,7 @@ class HBNBCommand(cmd.Cmd):
                 dictionary[key] = value
 
         # Create new instance and add the parsed params to it
-        new_instance = HBNBCommand.classes[arg_list[0]]()
-        new_instance.__dict__.update(dictionary)
+        new_instance = HBNBCommand.classes[arg_list[0]](**dictionary)
         storage.new(new_instance)
         print(new_instance.id)
         storage.save()

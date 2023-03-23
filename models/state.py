@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """ State Module for HBNB project """
-from models import storage
 from models.base_model import BaseModel, Base
 from models.city import City
 from sqlalchemy import Column, String, Integer
@@ -17,9 +16,12 @@ class State(BaseModel, Base):
     @property
     def cities(self, id):
         """ Get all cities of the db which are in the state """
+        from models import storage
+
         storageType = os.environ.get("HBNB_TYPE_STORAGE")
         if storageType == "db":
             return self.cities
+
         elif storageType == "file":
             res = []
             objs = storage.all()
