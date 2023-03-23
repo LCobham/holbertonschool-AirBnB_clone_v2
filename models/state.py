@@ -17,7 +17,7 @@ class State(BaseModel, Base):
     @property
     def cities(self, id):
         """ Get all cities of the db which are in the state """
-        storageType = os.getenvb("HBNB_TYPE_STORAGE", default=None)
+        storageType = os.environ.get("HBNB_TYPE_STORAGE")
         if storageType == "db":
             return self.cities
         elif storageType == "file":
