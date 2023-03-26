@@ -61,6 +61,7 @@ class FileStorage:
         if obj is not None:
             key = type(obj).__name__ + '.' + str(getattr(obj, 'id', None)) 
             try:
-                del FileStorage.__objects[key]
+                del self.__objects[key]
+                self.save()
             except KeyError:
                 pass
