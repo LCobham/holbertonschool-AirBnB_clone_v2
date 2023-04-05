@@ -37,7 +37,6 @@ class HBNBCommand(cmd.Cmd):
 
     def precmd(self, line):
         """Reformat command line for advanced command syntax.
-
         Usage: <class name>.<command>([<id> [<*args> or <**kwargs>]])
         (Brackets denote optional fields in usage example.)
         """
@@ -115,53 +114,38 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        # Separate all params
-        arg_list = args.split(" ")
+        try:
+            if not args:
+                raise SyntaxError
 
-        if not args:
+            argList = args.split(" ")
+            className = argList[0]
+
+            if className not in HBNBCommand.classes:
+                raise NameError
+
+            parameters = {}
+            for param in argList[1:]:
+                keyValue = param.partition("=")
+                if keyValue[1]:
+                    key = keyValue[0]
+                    value = eval(keyValue[2])
+
+                    if type(value) is str:
+                        value = value.replace('_', ' ').\
+                                    replace('"', '\\"')
+
+                    parameters[key] = value
+
+            newInstance = HBNBCommand.classes[className](**parameters)
+            storage.new(newInstance)
+            print(newInstance.id)
+            storage.save()
+
+        except SyntaxError:
             print("** class name missing **")
-            return
-
-        # Check if first argument is a valid class name
-        elif arg_list[0] not in HBNBCommand.classes:
+        except NameError:
             print("** class doesn't exist **")
-            return
-
-        # Create a dictionary with all the params
-        dictionary = {}
-        for param in arg_list[1:]:
-            # Param structure: <key>=<value>
-            keyValue = param.partition("=")
-            # Check if param structure is correct, else skip.
-            if len(keyValue[1]) == 1:
-                key = keyValue[0]
-                value = keyValue[2]
-
-                # Parse value: can be either a str, an int or float.
-                # Else skip
-                if value[0] == value[-1] == '"':
-                    value = value.replace("_", " ")
-                    value = value[1:-1]
-
-                elif value.count(".") == 1:
-                    try:
-                        value = float(value)
-                    except ValueError:
-                        continue
-
-                else:
-                    try:
-                        value = int(value)
-                    except ValueError:
-                        continue
-
-                dictionary[key] = value
-
-        # Create new instance and add the parsed params to it
-        new_instance = HBNBCommand.classes[arg_list[0]](**dictionary)
-        storage.new(new_instance)
-        print(new_instance.id)
-        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -224,7 +208,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del (storage.all()[key])
+            del storage.all()[key]
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -236,22 +220,22 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, args):
         """ Shows all objects, or all objects of a class"""
-        from models import storage
         print_list = []
 
-        if args:
-            args = args.split(' ')[0]  # remove possible trailing args
-            if args not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-                return
-            print_list = list(map(lambda x: str(x),
-                              storage.all(args).values()))
+        try:
+            if args:
+                args = args.split(' ')[0]  # remove possible trailing args
+                if args not in HBNBCommand.classes:
+                    raise NameError
+                for k, v in storage.all(eval(args)).items():
+                    print_list.append(str(v))
+            else:
+                for k, v in storage.all().items():
+                    print_list.append(str(v))
+            print(print_list)
 
-        else:
-            print_list = list(map(lambda x: str(x),
-                              storage.all().values()))
-
-        print(print_list)
+        except NameError:
+            print("** class doesn't exist **")
 
     def help_all(self):
         """ Help information for the all command """
@@ -261,8 +245,7 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, args):
         """Count current number of class instances"""
         count = 0
-        objs = storage.all()
-        for k, v in objs.items():
+        for k, v in storage._FileStorage__objects.items():
             if args == k.split('.')[0]:
                 count += 1
         print(count)
